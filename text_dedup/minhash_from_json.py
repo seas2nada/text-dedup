@@ -32,20 +32,28 @@ from text_dedup.utils.hashfunc import xxh3_16hash
 from text_dedup.utils.hashfunc import xxh3_32hash
 from text_dedup.utils.timer import Timer
 
+<<<<<<< HEAD
 import json
 
+=======
+>>>>>>> 17ee9d88076ec9b97bacb45c1e25e2103e17796a
 SEED = 42
 RNG = np.random.RandomState(SEED)
 NON_ALPHA = re.compile(r"\W", re.UNICODE)
 datasets.logging.set_verbosity_error()
 uf = UnionFind()
 
+<<<<<<< HEAD
 def remove_timestamps(line):
     line = re.sub(r'<\|.*?\|>', '', line)
     return line.strip().replace("  ", " ")
 
 def remove_puncs(text):
     pattern = r'[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318Fa-zA-Z0-9]+'
+=======
+def remove_puncs(text):
+    pattern = r'[\uAC00-\uD7A3\u1100-\u11FF\u3130-\u318Fa-zA-Z]+'
+>>>>>>> 17ee9d88076ec9b97bacb45c1e25e2103e17796a
     
     # Find all substrings that match the pattern
     matches = re.findall(pattern, text)
@@ -225,10 +233,21 @@ def main(
 
     with timer("Total"):
         with timer("Loading"):
+<<<<<<< HEAD
             json_file = io_args.path
             ds = load_dataset("json", data_files=json_file)
             ds = ds['train']
 
+=======
+            json_file = "/home/ubuntu/Workspace/DB/korean_db/data/KlecSpeech/train.json"
+            ds = load_dataset("json", data_files=json_file)
+            ds = ds['train']
+
+            ds = ds.filter(
+                lambda x: len(NON_ALPHA.split(x[meta_args.column].lower())) >= minhash_args.min_length,
+                num_proc=io_args.num_proc,
+            )
+>>>>>>> 17ee9d88076ec9b97bacb45c1e25e2103e17796a
             ds = ds.map(
                 prepare_dataset,
                 desc="preprocess train dataset",
@@ -349,6 +368,7 @@ def main(
 
         with timer("Saving"):
             final_data = final_data.remove_columns(["__cluster__"])
+<<<<<<< HEAD
             if io_args.debug:
                 with open(os.path.join(io_args.output, "uf.pkl"), "wb") as f:
                     pickle.dump(uf, f, protocol=pickle.HIGHEST_PROTOCOL)
@@ -359,6 +379,15 @@ def main(
             
             output_excluded_json_path = os.path.join(io_args.output + "_filtered", "excluded_data.json")
             excluded_data.to_json(f"{output_excluded_json_path}", force_ascii=False, indent=4)
+=======
+            final_data.save_to_disk(io_args.output)
+            if io_args.debug:
+                with open(os.path.join(io_args.output, "uf.pkl"), "wb") as f:
+                    pickle.dump(uf, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+            excluded_data = excluded_data.remove_columns(["__cluster__"])
+            excluded_data.save_to_disk(io_args.output + "_filtered")
+>>>>>>> 17ee9d88076ec9b97bacb45c1e25e2103e17796a
 
         with timer("Cleaning"):
             if io_args.clean_cache:
