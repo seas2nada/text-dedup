@@ -1,5 +1,5 @@
-json_path="/home/ubuntu/Workspace/DB/korean_db/data/KconfSpeech/timestamped_train.json"
-output_dir="Kconf_train"
+json_path="/home/ubuntu/Workspace/DB/korean_db/data/KtelSpeech/timestamped_train.json"
+output_dir="Ktel_train"
 
 mkdir -p $output_dir
 python -m text_dedup.minhash_from_json \
