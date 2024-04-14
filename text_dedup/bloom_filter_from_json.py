@@ -19,6 +19,7 @@ from text_dedup.utils.hashfunc import sha256_digest
 from text_dedup.utils.hashfunc import xxh3_128_digest
 from text_dedup.utils.timer import Timer
 
+import os
 import json
 import re
 
@@ -55,11 +56,9 @@ def main(
 
     with timer("Total"):
         with timer("Loading"):
-            # json_file = os.path.join("data/KlecSpeech", "train.json")
-            json_file = "/home/ubuntu/Workspace/DB/korean_db/data/KlecSpeech/train.json"
+            json_file = io_args.path
             ds = load_dataset("json", data_files=json_file)
             ds = ds['train']
-
             ds = ds.map(
                 prepare_dataset,
                 desc="preprocess train dataset",
@@ -125,8 +124,11 @@ def main(
             )
 
         with timer("Saving"):
-            ds.save_to_disk(io_args.output)
-            excluded_ds.save_to_disk(io_args.output + "_filtered")
+            output_json_path = os.path.join(io_args.output, "final_data.json")
+            ds.to_json(f"{output_json_path}", force_ascii=False, indent=4)
+            
+            output_excluded_json_path = os.path.join(io_args.output + "_filtered", "excluded_data.json")
+            excluded_ds.to_json(f"{output_excluded_json_path}", force_ascii=False, indent=4)
 
         with timer("Cleaning"):
             if io_args.clean_cache:

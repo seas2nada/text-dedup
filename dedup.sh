@@ -2,7 +2,7 @@ json_path="/home/ubuntu/Workspace/DB/korean_db/data/KtelSpeech/timestamped_train
 output_dir="Ktel_train"
 
 mkdir -p $output_dir
-python -m text_dedup.minhash_from_json \
+python -m text_dedup.bloom_filter_from_json \
   --path $json_path \
   --cache_dir "./cache" \
   --output ${output_dir} \
